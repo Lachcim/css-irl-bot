@@ -22,6 +22,7 @@ You can also manage the following strings:
 * `INVALID_CSS_MESSAGE_ENTRY`: Text describing an individual error.
 * `INVALID_CSS_MESSAGE_TAIL`: Text at the end of an invalid CSS message.
 * `VALID_CSS_MESSAGE`: Text informing that the parsed title is valid CSS.
+* `FOOTNOTE`: Text appended to every comment.
 
 The praw.ini file describes the credentials used by the bot. It has the following format:
 ```

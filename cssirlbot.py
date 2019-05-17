@@ -77,6 +77,7 @@ def formatErrorString(errors):
         message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error);
     
     message += config["strings"]["INVALID_CSS_MESSAGE_TAIL"]
+    message += config["strings"]["FOOTNOTE"]
     
     return message
 
@@ -90,7 +91,7 @@ def process_submission(submission):
     
     # reply to submission
     if result == True and config["behavior"]["comment_on_valid_css"]:
-        comment = submission.reply(config["strings"]["VALID_CSS_MESSAGE"])
+        comment = submission.reply(config["strings"]["VALID_CSS_MESSAGE"] + config["strings"]["FOOTNOTE"])
     elif result == False and config["behavior"]["comment_on_invalid_css"]:
         comment = submission.reply(formatErrorString(errors))
     
