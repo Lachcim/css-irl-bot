@@ -2,9 +2,25 @@ import requests
 import json
 import praw
 import threading
+import logging
+import traceback
+import sys
 
+# get config
 with open("config.json") as file:
     config = json.loads(file.read())
+
+# configure logging to file
+logging.basicConfig(filename="cssirlbot.log",
+    filemode="a",
+    format="%(asctime)s %(levelname)s %(message)s")
+logging.getLogger().setLevel(config["internal"]["logging_level"])
+
+# also log to stdout
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(config["internal"]["logging_level"])
+stdout_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+logging.getLogger().addHandler(stdout_handler)
 
 def validateQuery(css):
     # send query to w3c for direct validation, return none on network error
@@ -69,7 +85,7 @@ def process_submission(submission):
     result, errors = validateTitle(submission.title)
     
     if result == None:
-        print("Error while validating")
+        logging.error("Error while validating")
         return
     
     # reply to submission
@@ -85,25 +101,33 @@ def process_submission(submission):
     # mark submission as processed
     submission.save()
     
-    print("Parsed!")
+    logging.info("Parsed!")
 
 def work():
-    print("Checking for new submissions")
-    
-    # get already processed submissions
-    saved_submissions = list(reddit.user.me().saved())
-    
-    for submission in subreddit.new():
-        if submission in saved_submissions:
-            continue
+    try:
+        logging.info("Checking for new submissions")
         
-        print("New submission found: http://redd.it/" + submission.id)
-        process_submission(submission)
+        # get already processed submissions
+        saved_submissions = list(reddit.user.me().saved())
+        
+        for submission in subreddit.new():
+            if submission in saved_submissions:
+                continue
+            
+            logging.info("New submission found: http://redd.it/" + submission.id)
+            process_submission(submission)
+    except e:
+        logging.error("Error in main loop: ")
+        logging.info(traceback.format_exc())
         
     # restart this function after the configured interval
-    threading.Timer(config["behavior"]["feed_check_interval"], work).start()
+    threading.Timer(config["internal"]["feed_check_interval"], work).start()
+
+logging.info("Bot starting")
     
 reddit = praw.Reddit("cssirlbot", user_agent="linux:cssirlbot:1 (by /u/Lachcim)")
 subreddit = reddit.subreddit(config["behavior"]["subreddit"])
+
+logging.info("Bot online")
 
 work()

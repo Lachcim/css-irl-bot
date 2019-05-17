@@ -11,9 +11,10 @@ In config.json, you can configure the following settings:
 * `subreddit`: The subreddit where the bot operates.
 * `comment_on_invalid_css`: Whether the bot should comment on invalid CSS submissions.
 * `comment_on_valid_css`: Whether the bot should comment on valid CSS submissions.
-* `feed_check_interval`: How often the bot should check for new posts.
 * `distinguish_comments`: Mark comments left by the bot as moderator comments (requires the "posts" moderator permission).
 * `sticky_comments`: Whether distinguished comments should be stickied as well.
+* `feed_check_interval`: How often the bot should check for new posts.
+* `logging_level`: How detailed the logs should be.
 
 You can also manage the following strings:
 
@@ -37,7 +38,7 @@ The client ID and secret can be obtained when registering a reddit app: https://
 Download the files and prepare your configuration. Before running the bot, you might want to run `pip install -r requirements.txt` to obtain the dependencies. To start the script, run:
 
 ```
-python cssirlbot.py
+python3 cssirlbot.py
 ```
 
 The bot will try to fetch the newest 100 submissions and parse all of them.
