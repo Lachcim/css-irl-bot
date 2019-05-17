@@ -4,7 +4,7 @@ The CSS_IRL bot is a reddit bot that fetches new submissions from a subreddit an
 <img src="https://1mi.pl/~lachcim/html/cssirlbot.png">
 
 ## Configuration
-The bot can be confugured through a file named **config.json** as well as **praw.ini**.
+The bot can be configured through a file named **config.json** as well as **praw.ini**.
 
 In config.json, you can configure the following settings:
 
@@ -32,7 +32,7 @@ client_secret=XXX
 password=XXX
 username=XXX
 ```
-The client ID and secret can be obtained when registering a reddit app: https://reddit.com/prefs/apps/.
+The client ID and secret can be obtained by [registering a reddit app](https://reddit.com/prefs/apps).
 
 ## Running the bot
 
