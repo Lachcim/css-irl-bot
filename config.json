@@ -1,0 +1,16 @@
+{
+	"behavior": {
+		"subreddit": "css_irl_bot",
+		"comment_on_invalid_css": true,
+		"comment_on_valid_css": true,
+		"feed_check_interval": 10,
+		"distinguish_comments": false,
+		"sticky_comments": false
+	},
+	"strings": {
+		"INVALID_CSS_MESSAGE_HEAD": "Your title contains the following CSS errors:\n\n",
+		"INVALID_CSS_MESSAGE_ENTRY": "* Line {lastLine}, column: {lastColumn}, **{type}**: `{message}`\n",
+		"INVALID_CSS_MESSAGE_TAIL": "\nBetter luck next time!",
+		"VALID_CSS_MESSAGE": "Congratulations! Your title contains valid CSS!"
+	}
+}
