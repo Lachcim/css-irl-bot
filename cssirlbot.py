@@ -95,20 +95,40 @@ def process_submission(submission):
         logging.error("Error while validating")
         return
     
-    # reply to submission
-    if result == True and config["behavior"]["comment_on_valid_css"]:
-        comment = submission.reply(config["strings"]["VALID_CSS_MESSAGE"] + config["strings"]["FOOTNOTE"])
-    elif result == False and config["behavior"]["comment_on_invalid_css"]:
-        comment = submission.reply(formatErrorString(errors))
-    
-    # distinguish comment
-    if config["behavior"]["distinguish_comments"]:
-        comment.mod.distinguish(how="yes", sticky=config["behavior"]["sticky_comments"])
-    
-    # mark submission as processed
-    submission.save()
-    
-    logging.info("Parsed!")
+    try:
+        # reply to submission
+        if result == True and config["behavior"]["comment_on_valid_css"]:
+            comment = submission.reply(config["strings"]["VALID_CSS_MESSAGE"] + config["strings"]["FOOTNOTE"])
+        elif result == False and config["behavior"]["comment_on_invalid_css"]:
+            comment = submission.reply(formatErrorString(errors))
+        
+        # distinguish comment
+        if config["behavior"]["distinguish_comments"]:
+            comment.mod.distinguish(how="yes", sticky=config["behavior"]["sticky_comments"])
+        
+        # mark submission as processed
+        submission.save()
+        
+        logging.info("Processed!")
+        return True
+    except praw.exceptions.APIException as e:
+        if e.error_type == "RATELIMIT":
+            # rate limit reached, stop processing and wait for next batch
+            
+            logging.warning("Rate limit reached")
+            return False
+        elif e.error_type in ["TOO_OLD", "THREAD_LOCKED"]:
+            # prevent bot from processing this submission again
+            submission.save()
+            
+            logging.info("Post cannot be replied to")
+            return True
+        else:
+            # other error
+            
+            logging.warning("Error processing submission")
+            logging.info(traceback.format_exc())
+            return True
 
 def work():
     try:
@@ -122,7 +142,10 @@ def work():
                 continue
             
             logging.info("New submission found: http://redd.it/" + submission.id)
-            process_submission(submission)
+            
+            go_on = process_submission(submission)
+            if not go_on:
+                break
     except:
         logging.error("Error in main loop: ")
         logging.info(traceback.format_exc())
