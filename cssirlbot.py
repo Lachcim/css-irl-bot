@@ -55,6 +55,9 @@ def formatErrorString(errors):
     message += config["strings"]["INVALID_CSS_MESSAGE_HEAD"]
     
     for error in errors:
+        # protection against markdown injection, no way to escape the grave accent
+        error["message"] = error["message"].replace("`", "'")
+        
         message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error);
     
     message += config["strings"]["INVALID_CSS_MESSAGE_TAIL"]
