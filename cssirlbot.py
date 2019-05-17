@@ -117,7 +117,7 @@ def work():
             
             logging.info("New submission found: http://redd.it/" + submission.id)
             process_submission(submission)
-    except e:
+    except:
         logging.error("Error in main loop: ")
         logging.info(traceback.format_exc())
         
