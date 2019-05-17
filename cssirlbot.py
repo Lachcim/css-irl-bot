@@ -56,7 +56,13 @@ def validateTitle(title):
         return result, errors
     
     # finish validation if there was no parse error
-    if errors[0]["message"] != "Parse Error.":
+    parse_error = False
+    for error in errors:
+        if error["message"] == "Parse Error.":
+            parse_error = True
+            break
+            
+    if not parse_error:
         return result, errors
         
     # if there was a parse error, retry validation with dummy selector wrapped around
