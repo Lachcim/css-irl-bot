@@ -93,7 +93,7 @@ def work():
     # get already processed submissions
     saved_submissions = list(reddit.user.me().saved())
     
-    for submission in subreddit.stream.submissions():
+    for submission in subreddit.new():
         if submission in saved_submissions:
             continue
         
