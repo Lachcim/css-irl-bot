@@ -1,10 +1,10 @@
-import requests
 import json
-import praw
-import threading
 import logging
-import traceback
 import sys
+import threading
+import traceback
+import praw
+import requests
 
 # get config
 with open("config.json") as file:
