@@ -1,10 +1,10 @@
-import requests
 import json
-import praw
-import threading
 import logging
-import traceback
 import sys
+import threading
+import traceback
+import praw
+import requests
 
 # get config
 with open("config.json") as file:
@@ -80,7 +80,7 @@ def formatErrorString(errors):
         # protection against markdown injection, no way to escape the grave accent
         error["message"] = error["message"].replace("`", "'")
         
-        message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error);
+        message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error)
     
     message += config["strings"]["INVALID_CSS_MESSAGE_TAIL"]
     message += config["strings"]["FOOTNOTE"]

@@ -25,7 +25,7 @@ You can also manage the following strings:
 * `FOOTNOTE`: Text appended to every comment.
 
 The praw.ini file describes the credentials used by the bot. It has the following format:
-```
+```ini
 [cssirlbot]
 client_id=XXX
 client_secret=XXX
