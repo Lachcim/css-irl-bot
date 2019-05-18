@@ -5,6 +5,7 @@ import threading
 import traceback
 import praw
 import requests
+import os.path
 
 # get config
 with open("config.json") as file:
@@ -21,6 +22,13 @@ stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setLevel(config["internal"]["logging_level"])
 stdout_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
 logging.getLogger().addHandler(stdout_handler)
+
+# get processed submissions
+processed_submissions = []
+if os.path.isfile("processedsubmissions.txt"):
+    with open("processedsubmissions.txt", "r") as file:
+        for line in file:
+            processed_submissions.append(line[:-1])
 
 def validate_query(css):
     # send query to w3c for direct validation, return none on network error
@@ -107,7 +115,7 @@ def process_submission(submission):
             comment.mod.distinguish(how="yes", sticky=config["behavior"]["sticky_comments"])
         
         # mark submission as processed
-        submission.save()
+        mark_as_processed(submission)
         
         logging.info("Processed!")
         return True
@@ -119,7 +127,7 @@ def process_submission(submission):
             return False
         elif e.error_type in ["TOO_OLD", "THREAD_LOCKED"]:
             # prevent bot from processing this submission again
-            submission.save()
+            mark_as_processed(submission)
             
             logging.info("Post cannot be replied to")
             return True
@@ -130,21 +138,29 @@ def process_submission(submission):
             logging.info(traceback.format_exc())
             return True
 
+def mark_as_processed(submission):
+    # prevent duplicates
+    if submission.id in processed_submissions:
+        return
+    
+    # add to list
+    processed_submissions.append(submission.id)
+    
+    # add to file
+    with open("processedsubmissions.txt", "a") as file:
+        file.write(submission.id + "\n")
+
 def work():
     try:
         logging.info("Checking for new submissions")
         
-        # get already processed submissions
-        saved_submissions = list(reddit.user.me().saved())
-        
         for submission in subreddit.new():
-            if submission in saved_submissions:
+            if submission.id in processed_submissions:
                 continue
             
             logging.info("New submission found: http://redd.it/" + submission.id)
             
-            go_on = process_submission(submission)
-            if not go_on:
+            if not process_submission(submission):
                 break
     except:
         logging.error("Error in main loop: ")
