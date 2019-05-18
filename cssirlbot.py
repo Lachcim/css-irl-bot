@@ -22,7 +22,7 @@ stdout_handler.setLevel(config["internal"]["logging_level"])
 stdout_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
 logging.getLogger().addHandler(stdout_handler)
 
-def validateQuery(css):
+def validate_query(css):
     # send query to w3c for direct validation, return none on network error
     try:
         result = requests.post(
@@ -47,9 +47,9 @@ def validateQuery(css):
     else:
         return None
     
-def validateTitle(title):
+def validate_title(title):
     # check title as it is
-    result, errors = validateQuery(title)
+    result, errors = validate_query(title)
     
     # finish validation on success or network error
     if result != False:
@@ -66,12 +66,12 @@ def validateTitle(title):
         return result, errors
         
     # if there was a parse error, retry validation with dummy selector wrapped around
-    new_result, new_errors = validateQuery(".dummySelector { " + title + " }")
+    new_result, new_errors = validate_query(".dummySelector { " + title + " }")
     
     # return result verbatim
     return new_result, new_errors
     
-def formatErrorString(errors):
+def format_error_string(errors):
     # format the errors using reddit markdown syntax
     message = ""
     message += config["strings"]["INVALID_CSS_MESSAGE_HEAD"]
@@ -89,7 +89,7 @@ def formatErrorString(errors):
 
 def process_submission(submission):
     # validate submission
-    result, errors = validateTitle(submission.title)
+    result, errors = validate_title(submission.title)
     
     if result == None:
         logging.error("Error while validating")
@@ -100,7 +100,7 @@ def process_submission(submission):
         if result == True and config["behavior"]["comment_on_valid_css"]:
             comment = submission.reply(config["strings"]["VALID_CSS_MESSAGE"] + config["strings"]["FOOTNOTE"])
         elif result == False and config["behavior"]["comment_on_invalid_css"]:
-            comment = submission.reply(formatErrorString(errors))
+            comment = submission.reply(format_error_string(errors))
         
         # distinguish comment
         if config["behavior"]["distinguish_comments"]:
