@@ -1,11 +1,11 @@
 import json
 import logging
+import os.path
 import sys
 import threading
 import traceback
 import praw
 import requests
-import os.path
 
 # get config
 with open("config.json") as file:
