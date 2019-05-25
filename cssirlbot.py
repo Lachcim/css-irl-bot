@@ -64,20 +64,33 @@ def validate_title(title):
         return result, errors
     
     # finish validation if there was no parse error
-    parse_error = False
-    for error in errors:
-        if error["message"] == "Parse Error.":
-            parse_error = True
-            break
-            
-    if not parse_error:
+    if not is_parse_error(errors):
+        print("First attempt didn't result in a parse error, returning error 1")
         return result, errors
         
     # if there was a parse error, retry validation with dummy selector wrapped around
     new_result, new_errors = validate_query(".dummySelector { " + title + " }")
     
-    # return result verbatim
+    # if new query resulted in a single parse error, return the old error
+    if is_parse_error(new_errors):
+        return result, errors
+    
+    # otherwise return the new result
     return new_result, new_errors
+    
+def is_parse_error(errors):
+    # check whether an error list only contains a single parse error
+    
+    parse_error = False
+    non_parse_error = False
+    
+    for error in errors:
+        if "Parse Error." in error["message"]:
+            parse_error = True
+        else:
+            non_parse_error = True
+            
+    return parse_error and not non_parse_error
     
 def format_error_string(errors):
     # format the errors using reddit markdown syntax
