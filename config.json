@@ -1,10 +1,12 @@
 {
 	"behavior": {
 		"subreddit": "css_irl_bot",
+		"process_submissions": true,
 		"comment_on_invalid_css": true,
 		"comment_on_valid_css": true,
 		"distinguish_comments": false,
-		"sticky_comments": false
+		"sticky_comments": false,
+		"process_mentions": true
 	},
 	"internal": {
 		"feed_check_interval": 10,

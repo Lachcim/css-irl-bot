@@ -70,4 +70,6 @@ def format_error_string(errors, config):
     
     return message
             
-# todo: process comment
+def process_comment(comment, config):
+    # todo: process comment
+    return True
