@@ -3,9 +3,8 @@ import re
 import praw
 import cssirlbot.submissionhistory
 import cssirlbot.validation
-from pprint import pprint
 
-def process_submission(submission, config):
+def process_submission(submission, config, reply_target=None):
     # get config
     comment_on_valid = config["behavior"]["comment_on_valid_css"]
     comment_on_invalid = config["behavior"]["comment_on_invalid_css"]
@@ -22,10 +21,12 @@ def process_submission(submission, config):
     
     try:
         # reply to submission
+        reply_target = reply_target or submission
+        
         if result == True and comment_on_valid:
-            comment = submission.reply(format_success_string(errors, config))
+            comment = reply_target.reply(format_success_string(errors, config))
         elif result == False and comment_on_invalid:
-            comment = submission.reply(format_error_string(errors, config))
+            comment = reply_target.reply(format_error_string(errors, config))
         
         # distinguish comment
         if distinguish_comments:
@@ -72,7 +73,7 @@ def format_error_string(errors, config):
     
     return message
             
-def process_comment(comment, config, username):
+def process_comment(comment, config, reddit):
     # get config
     home_subreddit = config["behavior"]["subreddit"]
     process_external = config["behavior"]["process_external_mentions"]
@@ -84,9 +85,27 @@ def process_comment(comment, config, username):
         return True
         
     # get command used in mention
-    command = get_command(comment.body, config, username)
+    command = get_command(comment.body, config, reddit.user.me().name)
     
-    print("Used command: " + command)
+    # handle parsing the op
+    if command == "parse_op" or (command == "parse_parent" and comment.parent_id.startswith("t3_")):
+        # obtain op submission, trim prefix
+        op = reddit.submission(id=comment.parent_id[3:])
+        
+        # don't parse op if already parsed
+        if cssirlbot.submissionhistory.is_processed(op):
+            logging.info("Mention points to already parsed post")
+            # mark comment as handled
+            cssirlbot.submissionhistory.mark_as_processed(comment)
+            return True
+        
+        # delegate submission handling to standard function
+        result = process_submission(op, config, comment)
+        if result:
+            # mark comment as handled on success
+            cssirlbot.submissionhistory.mark_as_processed(comment)
+            
+        return result
     
     # todo: process comment
     return True

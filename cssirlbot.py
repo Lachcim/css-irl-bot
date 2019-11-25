@@ -50,7 +50,7 @@ def work():
                 logging.info("New mention found: https://reddit.com/r/all/comments/" + mention.submission.id + "/" + mention.id)
                 
                 # abandon session on error
-                if not cssirlbot.processing.process_comment(mention, config, reddit.user.me().name):
+                if not cssirlbot.processing.process_comment(mention, config, reddit):
                     break
     except:
         logging.error("Error in main loop: ")
