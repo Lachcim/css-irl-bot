@@ -36,7 +36,10 @@ def process_submission(submission, config, reply_target=None):
         
         # distinguish comment
         if distinguish_comments:
-            comment.mod.distinguish(how="yes", sticky=sticky_comments)
+            try:
+                comment.mod.distinguish(how="yes", sticky=sticky_comments)
+            except:
+                pass
         
         # mark submission as processed
         cssirlbot.submissionhistory.mark_as_processed(submission)
@@ -128,7 +131,10 @@ def process_comment(comment, config, reddit):
         
         # distinguish comment
         if distinguish_comments:
-            new_comment.mod.distinguish(how="yes", sticky=sticky_comments)
+            try:
+                new_comment.mod.distinguish(how="yes")
+            except:
+                pass
         
         # mark comments as processed
         cssirlbot.submissionhistory.mark_as_processed(comment)
