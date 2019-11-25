@@ -52,6 +52,18 @@ def work():
                 # abandon session on error
                 if not cssirlbot.processing.process_comment(mention, config, reddit):
                     break
+            
+            # comment replies have to be handled separately
+            for mention in reddit.inbox.comment_replies():
+                # ignore processed comments
+                if cssirlbot.submissionhistory.is_processed(mention):
+                    continue
+                    
+                logging.info("New comment reply found: https://reddit.com/r/all/comments/" + mention.submission.id + "/" + mention.id)
+                
+                # abandon session on error
+                if not cssirlbot.processing.process_comment(mention, config, reddit):
+                    break
     except:
         logging.error("Error in main loop: ")
         logging.info(traceback.format_exc())
