@@ -3,6 +3,7 @@ import re
 import praw
 import cssirlbot.submissionhistory
 import cssirlbot.validation
+import cssirlbot.formatting
 
 def process_submission(submission, config, reply_target=None):
     # get config
@@ -27,9 +28,9 @@ def process_submission(submission, config, reply_target=None):
         external = reply_target.subreddit.display_name != home_subreddit
         
         if result == True and comment_on_valid:
-            comment = reply_target.reply(format_title_success_string(config, foreign, external))
+            comment = reply_target.reply(cssirlbot.formatting.format_title_success_string(config, foreign, external))
         elif result == False and comment_on_invalid:
-            comment = reply_target.reply(format_title_error_string(errors, config))
+            comment = reply_target.reply(cssirlbot.formatting.format_title_error_string(errors, config))
         
         # distinguish comment
         if distinguish_comments:
@@ -56,50 +57,6 @@ def process_submission(submission, config, reply_target=None):
             logging.warning("Error processing submission")
             logging.info(traceback.format_exc())
             return True
-            
-def format_title_success_string(config, foreign, external):
-    message = ""
-    
-    # add message addressed to op or not
-    if not foreign:
-        message += config["strings"]["VALID_TITLE_MESSAGE"]
-    else:
-        message += config["strings"]["VALID_TITLE_MESSAGE_FOREIGN"]
-    
-    # add universal footnote
-    message += config["strings"]["FOOTNOTE"]
-    
-    # if external, add postcard
-    if external:
-        message += config["strings"]["POSTCARD"]
-    
-    return message
-    
-def format_title_error_string(errors, config, foreign, external):
-    message = ""
-    
-    # add message addressed to op or not
-    if not foreign:
-        message += config["strings"]["INVALID_TITLE_MESSAGE"]
-    else:
-        message += config["strings"]["INVALID_TITLE_MESSAGE_FOREIGN"]
-    
-    # list errors
-    for error in errors:
-        # protection against markdown injection, no way to escape the grave accent
-        error["message"] = error["message"].replace("`", "'")
-        
-        message += config["strings"]["IVALID_CSS_ERROR"].format(**error)
-    
-    # add universal error tail and footnote
-    message += config["strings"]["IVALID_CSS_TAIL"]
-    message += config["strings"]["FOOTNOTE"]
-    
-    # if external, add postcard
-    if external:
-        message += config["strings"]["POSTCARD"]
-    
-    return message
             
 def process_comment(comment, config, reddit):
     # get config
