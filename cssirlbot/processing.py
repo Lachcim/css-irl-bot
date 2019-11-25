@@ -130,8 +130,10 @@ def process_comment(comment, config, reddit):
         if distinguish_comments:
             new_comment.mod.distinguish(how="yes", sticky=sticky_comments)
         
-        # mark comment as processed
+        # mark comments as processed
         cssirlbot.submissionhistory.mark_as_processed(comment)
+        if foreign:
+            cssirlbot.submissionhistory.mark_as_processed(css_origin)
         
         logging.info("Processed!")
         return True
