@@ -26,7 +26,7 @@ def validate_query(css):
     else:
         return None
     
-def validate_title(title):
+def validate_text(title):
     # check title as it is
     result, errors = validate_query(title)
     
@@ -39,7 +39,7 @@ def validate_title(title):
         return result, errors
         
     # if there was a parse error, retry validation with dummy selector wrapped around
-    new_result, new_errors = validate_query(".dummySelector { " + title + " }")
+    new_result, new_errors = validate_query("*{" + title + "}")
     
     # if new query resulted in a single parse error, return the old error
     if is_parse_error(new_errors):

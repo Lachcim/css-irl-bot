@@ -1,5 +1,6 @@
 ﻿import logging
 import re
+import traceback
 import mistune
 import praw
 import cssirlbot.submissionhistory
@@ -14,7 +15,7 @@ def process_submission(submission, config, reply_target=None):
     sticky_comments = config["behavior"]["sticky_comments"]
     
     # validate submission
-    result, errors = cssirlbot.validation.validate_title(submission.title)
+    result, errors = cssirlbot.validation.validate_text(submission.title)
     
     # signal failure if needed
     if result == None:
@@ -31,7 +32,7 @@ def process_submission(submission, config, reply_target=None):
         if result == True and comment_on_valid:
             comment = reply_target.reply(cssirlbot.formatting.format_title_success_string(config, foreign, external))
         elif result == False and comment_on_invalid:
-            comment = reply_target.reply(cssirlbot.formatting.format_title_error_string(errors, config))
+            comment = reply_target.reply(cssirlbot.formatting.format_title_error_string(errors, config, foreign, external))
         
         # distinguish comment
         if distinguish_comments:
@@ -43,22 +44,25 @@ def process_submission(submission, config, reply_target=None):
         logging.info("Processed!")
         return True
     except praw.exceptions.APIException as e:
-        if e.error_type == "RATELIMIT":
-            # rate limit reached, stop processing and wait for next batch
-            logging.warning("Rate limit reached")
-            return False
-        elif e.error_type in ["TOO_OLD", "THREAD_LOCKED"]:
-            # prevent bot from processing this submission again
-            cssirlbot.submissionhistory.mark_as_processed(submission)
+        return handle_error(submission, e)
             
-            logging.info("Post cannot be replied to")
-            return True
-        else:
-            # other error
-            logging.warning("Error processing submission")
-            logging.info(traceback.format_exc())
-            return True
-            
+def handle_error(submission, e):
+    if e.error_type == "RATELIMIT":
+        # rate limit reached, stop processing and wait for next batch
+        logging.warning("Rate limit reached")
+        return False
+    elif e.error_type in ["TOO_OLD", "THREAD_LOCKED"]:
+        # prevent bot from processing this submission again
+        cssirlbot.submissionhistory.mark_as_processed(submission)
+        
+        logging.info("Post cannot be replied to")
+        return True
+    else:
+        # other error
+        logging.warning("Error processing submission")
+        logging.info(traceback.format_exc())
+        return True
+
 def process_comment(comment, config, reddit):
     # get config
     home_subreddit = config["behavior"]["subreddit"]
@@ -103,8 +107,31 @@ def process_comment(comment, config, reddit):
     # find css and validate it
     css_origin = comment if command == "parse_this" else reddit.comment(id=comment.parent_id)
     css, css_source = find_css(css_origin.body)
+    result, errors = cssirlbot.validation.validate_text(css)
     
-    return True
+    # signal failure if needed
+    if result == None:
+        logging.error("Error while validating")
+        return False
+    
+    try:
+        # reply to comment
+        home_subreddit = config["behavior"]["subreddit"]
+        foreign = command == "parse_parent"
+        external = comment.subreddit.display_name != home_subreddit
+        
+        if result == True:
+            comment = comment.reply(cssirlbot.formatting.format_comment_success_string(config, foreign, external))
+        else:
+            comment = comment.reply(cssirlbot.formatting.format_comment_error_string(errors, config, foreign, external))
+        
+        # mark comment as processed
+        cssirlbot.submissionhistory.mark_as_processed(comment)
+        
+        logging.info("Processed!")
+        return True
+    except praw.exceptions.APIException as e:
+        return handle_error(comment, e)
 
 def get_command(body, config, username):
     # find valid command calls

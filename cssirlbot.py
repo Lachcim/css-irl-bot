@@ -2,7 +2,6 @@ import json
 import logging
 import sys
 import threading
-import traceback
 import praw
 import cssirlbot.processing
 import cssirlbot.submissionhistory
