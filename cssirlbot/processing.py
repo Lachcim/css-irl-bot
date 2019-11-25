@@ -1,5 +1,6 @@
 ﻿import logging
 import re
+import mistune
 import praw
 import cssirlbot.submissionhistory
 import cssirlbot.validation
@@ -72,6 +73,13 @@ def process_comment(comment, config, reddit):
     # get command used in mention
     command = get_command(comment.body, config, reddit.user.me().name)
     
+    # handle invalid commands
+    if not command:
+        logging.info("Mention doesn't contain a valid command")
+        # mark comment as handled
+        cssirlbot.submissionhistory.mark_as_processed(comment)
+        return True
+    
     # handle parsing the op
     if command == "parse_op" or (command == "parse_parent" and comment.parent_id.startswith("t3_")):
         # obtain op submission, trim prefix
@@ -92,7 +100,10 @@ def process_comment(comment, config, reddit):
             
         return result
     
-    # todo: process comment
+    # find css and validate it
+    css_origin = comment if command == "parse_this" else reddit.comment(id=comment.parent_id)
+    css, css_source = find_css(css_origin.body)
+    
     return True
 
 def get_command(body, config, username):
@@ -108,3 +119,26 @@ def get_command(body, config, username):
     
     # return none on failure
     return None
+
+def find_css(body):
+    # parse markdown
+    html = mistune.markdown(body)
+    
+    # it is known that when one parses html with regex, zalgo sings the song
+    # that ends the world. in this case, however, the html produced by mistune
+    # can be assumed to regular and therefore parseable using regex.
+    
+    # find code blocks
+    expression = re.compile("<pre><code>(.*?)</code></pre>", re.DOTALL)
+    css = "".join(re.findall(expression, html))
+    if css:
+        return css, "block"
+    
+    # if the above failed, find inline code
+    expression = re.compile("<code>(.*?)</code>", re.DOTALL)
+    css = "\n".join(re.findall(expression, html))
+    if css:
+        return css, "inline"
+        
+    # if all failed, parse the entire comment
+    return body, "body"
