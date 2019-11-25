@@ -121,9 +121,9 @@ def process_comment(comment, config, reddit):
         external = comment.subreddit.display_name != home_subreddit
         
         if result == True:
-            comment = comment.reply(cssirlbot.formatting.format_comment_success_string(config, foreign, external))
+            comment = comment.reply(cssirlbot.formatting.format_comment_success_string(css_source, css, config, foreign, external))
         else:
-            comment = comment.reply(cssirlbot.formatting.format_comment_error_string(errors, config, foreign, external))
+            comment = comment.reply(cssirlbot.formatting.format_comment_error_string(css_source, css, errors, config, foreign, external))
         
         # mark comment as processed
         cssirlbot.submissionhistory.mark_as_processed(comment)

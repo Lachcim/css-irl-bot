@@ -19,6 +19,15 @@
 		"INVALID_TITLE_MESSAGE_HEAD": "Your title contains the following CSS errors:\n\n",
 		"INVALID_TITLE_MESSAGE_HEAD_FOREIGN": "The title of this submission contains the following CSS errors:\n\n",
 		
+		"CSS_SOURCE_BLOCK": "I detected the following CSS in the preformatted text in your comment:\n\n",
+		"CSS_SOURCE_INLINE": "I detected the following CSS in the inline code in your comment:\n\n",
+		"CSS_SOURCE_BODY": "I was unable do detect any CSS in your comment, so I parsed the entire body.\n\n",
+		
+		"VALID_COMMENT_MESSAGE": "Congratulations! Your comment contains valid CSS!",
+		"VALID_COMMENT_MESSAGE_FOREIGN": "Hurray! The your parent comment contains valid CSS!",
+		"INVALID_COMMENT_MESSAGE_HEAD": "Your comment contains the following CSS errors:\n\n",
+		"INVALID_COMMENT_MESSAGE_HEAD_FOREIGN": "Your parent comment contains the following CSS errors:\n\n",
+		
 		"IVALID_CSS_ERROR": "* Line {lastLine}, column {lastColumn}, **{type}**: `{message}`\n",
 		"IVALID_CSS_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
 		
