@@ -1,7 +1,9 @@
 ﻿import logging
+import re
 import praw
 import cssirlbot.submissionhistory
 import cssirlbot.validation
+from pprint import pprint
 
 def process_submission(submission, config):
     # get config
@@ -70,6 +72,35 @@ def format_error_string(errors, config):
     
     return message
             
-def process_comment(comment, config):
+def process_comment(comment, config, username):
+    # get config
+    home_subreddit = config["behavior"]["subreddit"]
+    process_external = config["behavior"]["process_external_mentions"]
+    
+    # exclude external mentions if configured as such
+    if comment.subreddit.display_name != home_subreddit and not process_external:
+        logging.info("Ignoring external mention")
+        cssirlbot.submissionhistory.mark_as_processed(comment) # prevent reprocessing
+        return True
+        
+    # get command used in mention
+    command = get_command(comment.body, config, username)
+    
+    print("Used command: " + command)
+    
     # todo: process comment
     return True
+
+def get_command(body, config, username):
+    # find valid command calls
+    expression = re.compile("^/?u/" + username + "/?\s*(\S*)\s*$", re.MULTILINE)
+    matches = re.findall(expression, body)
+    
+    # find first valid command
+    for match in matches:
+        for command, keywords in config["commands"].items():
+            if match in keywords:
+                return command
+    
+    # return none on failure
+    return None

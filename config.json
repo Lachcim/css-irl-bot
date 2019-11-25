@@ -6,7 +6,8 @@
 		"comment_on_valid_css": true,
 		"distinguish_comments": false,
 		"sticky_comments": false,
-		"process_mentions": true
+		"process_mentions": true,
+		"process_external_mentions": false
 	},
 	"internal": {
 		"feed_check_interval": 10,
@@ -18,5 +19,10 @@
 		"INVALID_CSS_MESSAGE_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
 		"VALID_CSS_MESSAGE": "Congratulations! Your title contains valid CSS!",
 		"FOOTNOTE": ""
+	},
+	"commands": {
+		"parse_this": ["this", "me", "myself"],
+		"parse_parent": ["", "parent"],
+		"parse_op": ["op"]
 	}
 }

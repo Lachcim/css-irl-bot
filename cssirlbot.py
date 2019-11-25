@@ -28,7 +28,7 @@ def work():
         logging.info("Checking for new submissions")
         
         # check target subreddit for new submissions
-        if (config["behavior"]["process_submissions"]):
+        if config["behavior"]["process_submissions"]:
             for submission in subreddit.new():
                 # ignore processed submissions
                 if cssirlbot.submissionhistory.is_processed(submission):
@@ -41,7 +41,7 @@ def work():
                     break
         
         # check username mentions
-        if (config["behavior"]["process_mentions"]):
+        if config["behavior"]["process_mentions"]:
             for mention in reddit.inbox.mentions():
                 # ignore processed comments
                 if cssirlbot.submissionhistory.is_processed(mention):
@@ -50,7 +50,7 @@ def work():
                 logging.info("New mention found: https://reddit.com/r/all/comments/" + mention.submission.id + "/" + mention.id)
                 
                 # abandon session on error
-                if not cssirlbot.processing.process_comment(mention, config):
+                if not cssirlbot.processing.process_comment(mention, config, reddit.user.me().name):
                     break
     except:
         logging.error("Error in main loop: ")
