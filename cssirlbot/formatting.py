@@ -50,7 +50,7 @@ def format_comment_success_string(source, css, config, foreign, external):
     
     # print the source
     if source != "body":
-        message += "`" + ("\n" + css).replace("\n", "\n    ") + "`" 
+        message += ("    " + css).replace("\n", "\n    ") + "\n"
     
     # add message addressed to op or not
     if not foreign:
@@ -67,7 +67,7 @@ def format_comment_success_string(source, css, config, foreign, external):
     
     return message
 
-def format_comment_error_string(source, css, config, foreign, external):
+def format_comment_error_string(source, css, errors, config, foreign, external):
     message = ""
     
     # state the source
@@ -75,7 +75,7 @@ def format_comment_error_string(source, css, config, foreign, external):
     
     # print the source
     if source != "body":
-        message += "`" + ("\n" + css).replace("\n", "\n    ") + "`" 
+        message += ("    " + css).replace("\n", "\n    ") + "\n"
     
     # add message addressed to op or not
     if not foreign:

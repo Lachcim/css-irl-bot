@@ -67,6 +67,7 @@ def process_comment(comment, config, reddit):
     # get config
     home_subreddit = config["behavior"]["subreddit"]
     process_external = config["behavior"]["process_external_mentions"]
+    distinguish_comments = config["behavior"]["distinguish_comments"]
     
     # exclude external mentions if configured as such
     if comment.subreddit.display_name != home_subreddit and not process_external:
@@ -105,7 +106,7 @@ def process_comment(comment, config, reddit):
         return result
     
     # find css and validate it
-    css_origin = comment if command == "parse_this" else reddit.comment(id=comment.parent_id)
+    css_origin = comment if command == "parse_this" else reddit.comment(id=comment.parent_id[3:])
     css, css_source = find_css(css_origin.body)
     result, errors = cssirlbot.validation.validate_text(css)
     
@@ -121,9 +122,13 @@ def process_comment(comment, config, reddit):
         external = comment.subreddit.display_name != home_subreddit
         
         if result == True:
-            comment = comment.reply(cssirlbot.formatting.format_comment_success_string(css_source, css, config, foreign, external))
+            new_comment = comment.reply(cssirlbot.formatting.format_comment_success_string(css_source, css, config, foreign, external))
         else:
-            comment = comment.reply(cssirlbot.formatting.format_comment_error_string(css_source, css, errors, config, foreign, external))
+            new_comment = comment.reply(cssirlbot.formatting.format_comment_error_string(css_source, css, errors, config, foreign, external))
+        
+        # distinguish comment
+        if distinguish_comments:
+            new_comment.mod.distinguish(how="yes", sticky=sticky_comments)
         
         # mark comment as processed
         cssirlbot.submissionhistory.mark_as_processed(comment)
