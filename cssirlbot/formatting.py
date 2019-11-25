@@ -21,9 +21,9 @@ def format_title_error_string(errors, config, foreign, external):
     
     # add message addressed to op or not
     if not foreign:
-        message += config["strings"]["INVALID_TITLE_MESSAGE"]
+        message += config["strings"]["INVALID_TITLE_MESSAGE_HEAD"]
     else:
-        message += config["strings"]["INVALID_TITLE_MESSAGE_FOREIGN"]
+        message += config["strings"]["INVALID_TITLE_MESSAGE_HEAD_FOREIGN"]
     
     # list errors
     for error in errors:
