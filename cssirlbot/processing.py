@@ -148,13 +148,13 @@ def process_comment(comment, config, reddit):
 
 def get_command(body, config, username):
     # find valid command calls
-    expression = re.compile("^/?u/" + username + "/?\s*(\S*)\s*$", re.MULTILINE)
+    expression = re.compile("^/?u/" + username + "/?\s*(\S*)\s*$", re.MULTILINE | re.IGNORECASE)
     matches = re.findall(expression, body)
     
     # find first valid command
     for match in matches:
         for command, keywords in config["commands"].items():
-            if match in keywords:
+            if match.lower() in keywords:
                 return command
     
     # return none on failure
