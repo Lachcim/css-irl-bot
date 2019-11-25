@@ -1,11 +1,11 @@
 import json
 import logging
-import os.path
 import sys
 import threading
 import traceback
 import praw
-import requests
+import cssirlbot.processing
+import cssirlbot.submissionhistory
 
 # get config
 with open("config.json") as file:
@@ -23,158 +23,23 @@ stdout_handler.setLevel(config["internal"]["logging_level"])
 stdout_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
 logging.getLogger().addHandler(stdout_handler)
 
-# get processed submissions
-processed_submissions = []
-if os.path.isfile("processedsubmissions.txt"):
-    with open("processedsubmissions.txt", "r") as file:
-        for line in file:
-            processed_submissions.append(line[:-1])
-
-def validate_query(css):
-    # send query to w3c for direct validation, return none on network error
-    try:
-        result = requests.post(
-            "https://validator.w3.org/nu/",
-            headers={"User-Agent": "cssirlbot"},
-            files={
-                "css": (None, "yes"),
-                "out": (None, "json"),
-                "content": (None, css),
-                "useragent": (None, "cssirlbot"),
-                "showsource": (None, "yes")
-            }
-        )
-    except:
-        return None
-        
-    # return true if there are no messages, return none on wrong status code, otherwise return false
-    if result.status_code == 200:
-        parsed_result = json.loads(result.text)
-        
-        return len(parsed_result["messages"]) == 0, parsed_result["messages"]
-    else:
-        return None
-    
-def validate_title(title):
-    # check title as it is
-    result, errors = validate_query(title)
-    
-    # finish validation on success or network error
-    if result != False:
-        return result, errors
-    
-    # finish validation if there was no parse error
-    if not is_parse_error(errors):
-        print("First attempt didn't result in a parse error, returning error 1")
-        return result, errors
-        
-    # if there was a parse error, retry validation with dummy selector wrapped around
-    new_result, new_errors = validate_query(".dummySelector { " + title + " }")
-    
-    # if new query resulted in a single parse error, return the old error
-    if is_parse_error(new_errors):
-        return result, errors
-    
-    # otherwise return the new result
-    return new_result, new_errors
-    
-def is_parse_error(errors):
-    # check whether an error list only contains a single parse error
-    
-    parse_error = False
-    non_parse_error = False
-    
-    for error in errors:
-        if "Parse Error." in error["message"]:
-            parse_error = True
-        else:
-            non_parse_error = True
-            
-    return parse_error and not non_parse_error
-    
-def format_error_string(errors):
-    # format the errors using reddit markdown syntax
-    message = ""
-    message += config["strings"]["INVALID_CSS_MESSAGE_HEAD"]
-    
-    for error in errors:
-        # protection against markdown injection, no way to escape the grave accent
-        error["message"] = error["message"].replace("`", "'")
-        
-        message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error)
-    
-    message += config["strings"]["INVALID_CSS_MESSAGE_TAIL"]
-    message += config["strings"]["FOOTNOTE"]
-    
-    return message
-
-def process_submission(submission):
-    # validate submission
-    result, errors = validate_title(submission.title)
-    
-    if result == None:
-        logging.error("Error while validating")
-        return
-    
-    try:
-        # reply to submission
-        if result == True and config["behavior"]["comment_on_valid_css"]:
-            comment = submission.reply(config["strings"]["VALID_CSS_MESSAGE"] + config["strings"]["FOOTNOTE"])
-        elif result == False and config["behavior"]["comment_on_invalid_css"]:
-            comment = submission.reply(format_error_string(errors))
-        
-        # distinguish comment
-        if config["behavior"]["distinguish_comments"]:
-            comment.mod.distinguish(how="yes", sticky=config["behavior"]["sticky_comments"])
-        
-        # mark submission as processed
-        mark_as_processed(submission)
-        
-        logging.info("Processed!")
-        return True
-    except praw.exceptions.APIException as e:
-        if e.error_type == "RATELIMIT":
-            # rate limit reached, stop processing and wait for next batch
-            
-            logging.warning("Rate limit reached")
-            return False
-        elif e.error_type in ["TOO_OLD", "THREAD_LOCKED"]:
-            # prevent bot from processing this submission again
-            mark_as_processed(submission)
-            
-            logging.info("Post cannot be replied to")
-            return True
-        else:
-            # other error
-            
-            logging.warning("Error processing submission")
-            logging.info(traceback.format_exc())
-            return True
-
-def mark_as_processed(submission):
-    # prevent duplicates
-    if submission.id in processed_submissions:
-        return
-    
-    # add to list
-    processed_submissions.append(submission.id)
-    
-    # add to file
-    with open("processedsubmissions.txt", "a") as file:
-        file.write(submission.id + "\n")
-
 def work():
     try:
         logging.info("Checking for new submissions")
         
+        # check target subreddit for new submissions
         for submission in subreddit.new():
-            if submission.id in processed_submissions:
+            # ignore processed submissions
+            if cssirlbot.submissionhistory.is_processed(submission):
                 continue
             
             logging.info("New submission found: http://redd.it/" + submission.id)
             
-            if not process_submission(submission):
+            # if error occurred during processing, abandon processing session
+            if not cssirlbot.processing.process_submission(submission, config):
                 break
+        
+        # todo: check username mentions
     except:
         logging.error("Error in main loop: ")
         logging.info(traceback.format_exc())
