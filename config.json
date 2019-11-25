@@ -14,11 +14,16 @@
 		"logging_level": "INFO"
 	},
 	"strings": {
-		"INVALID_CSS_MESSAGE_HEAD": "Your title contains the following CSS errors:\n\n",
-		"INVALID_CSS_MESSAGE_ENTRY": "* Line {lastLine}, column {lastColumn}, **{type}**: `{message}`\n",
-		"INVALID_CSS_MESSAGE_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
-		"VALID_CSS_MESSAGE": "Congratulations! Your title contains valid CSS!",
-		"FOOTNOTE": ""
+		"VALID_TITLE_MESSAGE": "Congratulations! Your title contains valid CSS!",
+		"VALID_TITLE_MESSAGE_FOREIGN": "Hurray! The title of this submission contains valid CSS!",
+		"INVALID_TITLE_MESSAGE_HEAD": "Your title contains the following CSS errors:\n\n",
+		"INVALID_TITLE_MESSAGE_HEAD_FOREIGN": "The title of this submission contains the following CSS errors:\n\n",
+		
+		"IVALID_CSS_ERROR": "* Line {lastLine}, column {lastColumn}, **{type}**: `{message}`\n",
+		"IVALID_CSS_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
+		
+		"FOOTNOTE": "",
+		"POSTCARD": ""
 	},
 	"commands": {
 		"parse_this": ["this", "me", "myself"],

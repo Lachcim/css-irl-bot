@@ -21,12 +21,15 @@ def process_submission(submission, config, reply_target=None):
     
     try:
         # reply to submission
+        home_subreddit = config["behavior"]["subreddit"]
+        foreign = reply_target is not None
         reply_target = reply_target or submission
+        external = reply_target.subreddit.display_name != home_subreddit
         
         if result == True and comment_on_valid:
-            comment = reply_target.reply(format_success_string(errors, config))
+            comment = reply_target.reply(format_title_success_string(config, foreign, external))
         elif result == False and comment_on_invalid:
-            comment = reply_target.reply(format_error_string(errors, config))
+            comment = reply_target.reply(format_title_error_string(errors, config))
         
         # distinguish comment
         if distinguish_comments:
@@ -54,22 +57,47 @@ def process_submission(submission, config, reply_target=None):
             logging.info(traceback.format_exc())
             return True
             
-def format_success_string(errors, config):
-    return config["strings"]["VALID_CSS_MESSAGE"] + config["strings"]["FOOTNOTE"]
-    
-def format_error_string(errors, config):
-    # format the errors using reddit markdown syntax
+def format_title_success_string(config, foreign, external):
     message = ""
-    message += config["strings"]["INVALID_CSS_MESSAGE_HEAD"]
     
+    # add message addressed to op or not
+    if not foreign:
+        message += config["strings"]["VALID_TITLE_MESSAGE"]
+    else:
+        message += config["strings"]["VALID_TITLE_MESSAGE_FOREIGN"]
+    
+    # add universal footnote
+    message += config["strings"]["FOOTNOTE"]
+    
+    # if external, add postcard
+    if external:
+        message += config["strings"]["POSTCARD"]
+    
+    return message
+    
+def format_title_error_string(errors, config, foreign, external):
+    message = ""
+    
+    # add message addressed to op or not
+    if not foreign:
+        message += config["strings"]["INVALID_TITLE_MESSAGE"]
+    else:
+        message += config["strings"]["INVALID_TITLE_MESSAGE_FOREIGN"]
+    
+    # list errors
     for error in errors:
         # protection against markdown injection, no way to escape the grave accent
         error["message"] = error["message"].replace("`", "'")
         
-        message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error)
+        message += config["strings"]["IVALID_CSS_ERROR"].format(**error)
     
-    message += config["strings"]["INVALID_CSS_MESSAGE_TAIL"]
+    # add universal error tail and footnote
+    message += config["strings"]["IVALID_CSS_TAIL"]
     message += config["strings"]["FOOTNOTE"]
+    
+    # if external, add postcard
+    if external:
+        message += config["strings"]["POSTCARD"]
     
     return message
             
