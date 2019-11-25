@@ -61,19 +61,3 @@ def is_parse_error(errors):
             non_parse_error = True
             
     return parse_error and not non_parse_error
-    
-def format_error_string(errors, config):
-    # format the errors using reddit markdown syntax
-    message = ""
-    message += config["strings"]["INVALID_CSS_MESSAGE_HEAD"]
-    
-    for error in errors:
-        # protection against markdown injection, no way to escape the grave accent
-        error["message"] = error["message"].replace("`", "'")
-        
-        message += config["strings"]["INVALID_CSS_MESSAGE_ENTRY"].format(**error)
-    
-    message += config["strings"]["INVALID_CSS_MESSAGE_TAIL"]
-    message += config["strings"]["FOOTNOTE"]
-    
-    return message
