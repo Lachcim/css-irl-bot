@@ -1,11 +1,11 @@
-def format_title_success_string(config, foreign, external):
+def format_title_success_string(config, foreign, author, external):
     message = ""
     
     # add message addressed to op or not
     if not foreign:
         message += config["strings"]["VALID_TITLE_MESSAGE"]
     else:
-        message += config["strings"]["VALID_TITLE_MESSAGE_FOREIGN"]
+        message += config["strings"]["VALID_TITLE_MESSAGE_FOREIGN"].format(author=author)
     
     # add universal footnote
     message += config["strings"]["FOOTNOTE"]
@@ -16,14 +16,14 @@ def format_title_success_string(config, foreign, external):
     
     return message
     
-def format_title_error_string(errors, config, foreign, external):
+def format_title_error_string(errors, config, foreign, author, external):
     message = ""
     
     # add message addressed to op or not
     if not foreign:
         message += config["strings"]["INVALID_TITLE_MESSAGE_HEAD"]
     else:
-        message += config["strings"]["INVALID_TITLE_MESSAGE_HEAD_FOREIGN"]
+        message += config["strings"]["INVALID_TITLE_MESSAGE_HEAD_FOREIGN"].format(author=author)
     
     # list errors
     for error in errors:
@@ -42,7 +42,7 @@ def format_title_error_string(errors, config, foreign, external):
     
     return message
 
-def format_comment_success_string(source, css, config, foreign, external):
+def format_comment_success_string(source, css, config, foreign, author, external):
     message = ""
     
     # state the source
@@ -56,7 +56,7 @@ def format_comment_success_string(source, css, config, foreign, external):
     if not foreign:
         message += config["strings"]["VALID_COMMENT_MESSAGE"]
     else:
-        message += config["strings"]["VALID_COMMENT_MESSAGE_FOREIGN"]
+        message += config["strings"]["VALID_COMMENT_MESSAGE_FOREIGN"].format(author=author)
         
     # add universal footnote
     message += config["strings"]["FOOTNOTE"]
@@ -67,7 +67,7 @@ def format_comment_success_string(source, css, config, foreign, external):
     
     return message
 
-def format_comment_error_string(source, css, errors, config, foreign, external):
+def format_comment_error_string(source, css, errors, config, foreign, author, external):
     message = ""
     
     # state the source
@@ -81,7 +81,7 @@ def format_comment_error_string(source, css, errors, config, foreign, external):
     if not foreign:
         message += config["strings"]["INVALID_COMMENT_MESSAGE_HEAD"]
     else:
-        message += config["strings"]["INVALID_COMMENT_MESSAGE_HEAD_FOREIGN"]
+        message += config["strings"]["INVALID_COMMENT_MESSAGE_HEAD_FOREIGN"].format(author=author)
         
     # list errors
     for error in errors:

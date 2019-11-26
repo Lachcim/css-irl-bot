@@ -27,12 +27,13 @@ def process_submission(submission, config, reply_target=None):
         home_subreddit = config["behavior"]["subreddit"]
         foreign = reply_target is not None
         reply_target = reply_target or submission
+        author = submission.author.name
         external = reply_target.subreddit.display_name != home_subreddit
         
         if result == True and comment_on_valid:
-            comment = reply_target.reply(cssirlbot.formatting.format_title_success_string(config, foreign, external))
+            comment = reply_target.reply(cssirlbot.formatting.format_title_success_string(config, foreign, author, external))
         elif result == False and comment_on_invalid:
-            comment = reply_target.reply(cssirlbot.formatting.format_title_error_string(errors, config, foreign, external))
+            comment = reply_target.reply(cssirlbot.formatting.format_title_error_string(errors, config, foreign, author, external))
         
         # distinguish comment
         if distinguish_comments:
@@ -122,12 +123,13 @@ def process_comment(comment, config, reddit):
         # reply to comment
         home_subreddit = config["behavior"]["subreddit"]
         foreign = command == "parse_parent"
+        author = comment.author.name
         external = comment.subreddit.display_name != home_subreddit
         
         if result == True:
-            new_comment = comment.reply(cssirlbot.formatting.format_comment_success_string(css_source, css, config, foreign, external))
+            new_comment = comment.reply(cssirlbot.formatting.format_comment_success_string(css_source, css, config, foreign, author, external))
         else:
-            new_comment = comment.reply(cssirlbot.formatting.format_comment_error_string(css_source, css, errors, config, foreign, external))
+            new_comment = comment.reply(cssirlbot.formatting.format_comment_error_string(css_source, css, errors, config, foreign, author, external))
         
         # distinguish comment
         if distinguish_comments:
