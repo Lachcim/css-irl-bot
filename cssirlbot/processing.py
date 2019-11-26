@@ -123,7 +123,7 @@ def process_comment(comment, config, reddit):
         # reply to comment
         home_subreddit = config["behavior"]["subreddit"]
         foreign = command == "parse_parent"
-        author = comment.author.name
+        author = css_origin.author.name
         external = comment.subreddit.display_name != home_subreddit
         
         if result == True:
