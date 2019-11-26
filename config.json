@@ -21,7 +21,7 @@
 		
 		"CSS_SOURCE_BLOCK": "I detected the following CSS in the preformatted text:\n\n",
 		"CSS_SOURCE_INLINE": "I detected the following CSS in the inline code:\n\n",
-		"CSS_SOURCE_BODY": "I was unable do detect any CSS, so I parsed the entire body.\n\n",
+		"CSS_SOURCE_BODY": "I was unable to detect any CSS, so I parsed the entire body.\n\n",
 		
 		"VALID_COMMENT_MESSAGE": "Congratulations! Your comment contains valid CSS!",
 		"VALID_COMMENT_MESSAGE_FOREIGN": "Hurray! /u/{author}'s comment contains valid CSS!",
