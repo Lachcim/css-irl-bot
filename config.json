@@ -28,8 +28,8 @@
 		"INVALID_COMMENT_MESSAGE_HEAD": "Your comment contains the following CSS errors:\n\n",
 		"INVALID_COMMENT_MESSAGE_HEAD_FOREIGN": "Your parent comment contains the following CSS errors:\n\n",
 		
-		"IVALID_CSS_ERROR": "* Line {lastLine}, column {lastColumn}, **{type}**: `{message}`\n",
-		"IVALID_CSS_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
+		"INVALID_CSS_ERROR": "* Line {lastLine}, column {lastColumn}, **{type}**: `{message}`\n",
+		"INVALID_CSS_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
 		
 		"FOOTNOTE": "",
 		"POSTCARD": ""

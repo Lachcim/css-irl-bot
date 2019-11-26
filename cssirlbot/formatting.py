@@ -30,10 +30,10 @@ def format_title_error_string(errors, config, foreign, external):
         # protection against markdown injection, no way to escape the grave accent
         error["message"] = error["message"].replace("`", "'")
         
-        message += config["strings"]["IVALID_CSS_ERROR"].format(**error)
+        message += config["strings"]["INVALID_CSS_ERROR"].format(**error)
     
     # add universal error tail and footnote
-    message += config["strings"]["IVALID_CSS_TAIL"]
+    message += config["strings"]["INVALID_CSS_TAIL"]
     message += config["strings"]["FOOTNOTE"]
     
     # if external, add postcard
@@ -88,10 +88,10 @@ def format_comment_error_string(source, css, errors, config, foreign, external):
         # protection against markdown injection, no way to escape the grave accent
         error["message"] = error["message"].replace("`", "'")
         
-        message += config["strings"]["IVALID_CSS_ERROR"].format(**error)
+        message += config["strings"]["INVALID_CSS_ERROR"].format(**error)
     
     # add universal error tail and footnote
-    message += config["strings"]["IVALID_CSS_TAIL"]
+    message += config["strings"]["INVALID_CSS_TAIL"]
     message += config["strings"]["FOOTNOTE"]
     
     # if external, add postcard
