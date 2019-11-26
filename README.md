@@ -1,5 +1,5 @@
 # css-irl-bot
-The CSS_IRL bot is a reddit bot that fetches new submissions from a subreddit and parses their titles to check if they are valid CSS. It can post a comment detailing the found errors and do whatever else you'd like to do.
+The CSS_IRL bot is a reddit bot that fetches new submissions from a subreddit and parses their titles to check if they are valid CSS. It can post a comment detailing the found errors and/or confirm the validity of the title. It can also parse comments when summoned.
 
 <img src="https://1mi.pl/~lachcim/html/cssirlbot.png">
 
@@ -9,20 +9,17 @@ The bot can be configured through a file named **config.json** as well as **praw
 In config.json, you can configure the following settings:
 
 * `subreddit`: The subreddit where the bot operates.
-* `comment_on_invalid_css`: Whether the bot should comment on invalid CSS submissions.
-* `comment_on_valid_css`: Whether the bot should comment on valid CSS submissions.
-* `distinguish_comments`: Mark comments left by the bot as moderator comments (requires the "posts" moderator permission).
-* `sticky_comments`: Whether distinguished comments should be stickied as well.
+* `process_submissions`: Process posts.
+* `comment_on_invalid_css`: Automatically comment on invalid titles.
+* `comment_on_valid_css`: Automatically comment on valid titles.
+* `distinguish_comments`: Mark comments as mod comments (requires the "posts" mod permission).
+* `sticky_comments`: Sticky comments when processing posts.
+* `process_mentions`: Process username mentions.
+* `process_external_mentions`: Process mentions outside the home subreddit.
 * `feed_check_interval`: How often the bot should check for new posts.
 * `logging_level`: How detailed the logs should be.
 
-You can also manage the following strings:
-
-* `INVALID_CSS_MESSAGE_HEAD`: Text at the start of an invalid CSS message.
-* `INVALID_CSS_MESSAGE_ENTRY`: Text describing an individual error.
-* `INVALID_CSS_MESSAGE_TAIL`: Text at the end of an invalid CSS message.
-* `VALID_CSS_MESSAGE`: Text informing that the parsed title is valid CSS.
-* `FOOTNOTE`: Text appended to every comment.
+You can also manage the strings used by the bot and create or remove aliases for its commands.
 
 The praw.ini file describes the credentials used by the bot. It has the following format:
 ```ini
@@ -42,4 +39,4 @@ Download the files and prepare your configuration. Before running the bot, you m
 python3 cssirlbot.py
 ```
 
-The bot will try to fetch the newest 100 submissions and parse all of them.
+The bot will try to fetch the newest 100 submissions, mentions and comment replies and parse all of them.
