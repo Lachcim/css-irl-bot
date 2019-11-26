@@ -30,9 +30,9 @@ def process_submission(submission, config, reply_target=None):
         author = submission.author.name
         external = reply_target.subreddit.display_name != home_subreddit
         
-        if result == True and comment_on_valid:
+        if result == True and (comment_on_valid or foreign):
             comment = reply_target.reply(cssirlbot.formatting.format_title_success_string(config, foreign, author, external))
-        elif result == False and comment_on_invalid:
+        elif result == False and (comment_on_invalid or foreign):
             comment = reply_target.reply(cssirlbot.formatting.format_title_error_string(errors, config, foreign, author, external))
         
         # distinguish comment
