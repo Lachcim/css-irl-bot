@@ -164,7 +164,9 @@ def get_command(body, config, username):
 
 def find_css(body):
     # parse markdown
-    html = mistune.markdown(body)
+    md = mistune.create_markdown()
+    md.block.rules.remove("fenced_code") # disable fenced code unsupported by reddit
+    html = md(body)
     
     # it is known that when one parses html with regex, zalgo sings the song
     # that ends the world. in this case, however, the html produced by mistune
