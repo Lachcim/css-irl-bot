@@ -165,15 +165,18 @@ def get_command(body, config, username):
 def find_css(body):
     # parse markdown
     md = mistune.create_markdown()
-    md.block.rules.remove("fenced_code") # disable fenced code unsupported by reddit
+    # alternative algorithm: disable fenced code
+    # see https://github.com/Lachcim/css-irl-bot/issues/5 for discussion
+    # md.block.rules.remove("fenced_code")
     html = md(body)
     
     # it is known that when one parses html with regex, zalgo sings the song
     # that ends the world. in this case, however, the html produced by mistune
-    # can be assumed to regular and therefore parseable using regex.
+    # can be assumed to be regular and therefore parseable using regex.
     
     # find code blocks
-    expression = re.compile("<pre><code>(.*?)</code></pre>", re.DOTALL)
+    # expression = re.compile("<pre><code>(.*?)</code></pre>", re.DOTALL)
+    expression = re.compile("<pre><code[^>]*>(.*?)</code></pre>", re.DOTALL)
     css = "".join(re.findall(expression, html))
     if css:
         return css, "block"
