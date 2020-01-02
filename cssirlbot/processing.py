@@ -123,8 +123,13 @@ def process_comment(comment, config, reddit):
         # reply to comment
         home_subreddit = config["behavior"]["subreddit"]
         foreign = command == "parse_parent"
-        author = css_origin.author.name
         external = comment.subreddit.display_name != home_subreddit
+        
+        # get comment author, account for deleted users
+        if css_origin.author:
+            author = css_origin.author.name
+        else:
+            author = "[deleted]"
         
         if result == True:
             new_comment = comment.reply(cssirlbot.formatting.format_comment_success_string(css_source, css, config, foreign, author, external))
