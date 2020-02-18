@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import sys
@@ -23,6 +24,14 @@ stdout_handler.setLevel(config["internal"]["logging_level"])
 stdout_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
 logging.getLogger().addHandler(stdout_handler)
 
+# parse arguments
+argParser = argparse.ArgumentParser()
+argParser.add_argument("--dry-run",
+    dest="dry_run",
+    action="store_true",
+    help="collect available posts but don't process them")
+args = argParser.parse_args()
+
 def work():
     try:
         logging.info("Checking for new submissions")
@@ -35,6 +44,11 @@ def work():
                     continue
                 
                 logging.info("New submission found: http://redd.it/" + submission.id)
+                
+                if args.dry_run:
+                    cssirlbot.submissionhistory.mark_as_processed(submission)
+                    logging.info("Collected.")
+                    continue
                 
                 # if error occurred during processing, abandon processing session
                 if not cssirlbot.processing.process_submission(submission, config):
@@ -49,6 +63,11 @@ def work():
                     
                 logging.info("New mention found: https://reddit.com/r/all/comments/" + mention.submission.id + "/" + mention.id)
                 
+                if args.dry_run:
+                    cssirlbot.submissionhistory.mark_as_processed(mention)
+                    logging.info("Collected.")
+                    continue
+                
                 # abandon session on error
                 if not cssirlbot.processing.process_comment(mention, config, reddit):
                     break
@@ -60,6 +79,11 @@ def work():
                     continue
                     
                 logging.info("New comment reply found: https://reddit.com/r/all/comments/" + mention.submission.id + "/" + mention.id)
+                
+                if args.dry_run:
+                    cssirlbot.submissionhistory.mark_as_processed(mention)
+                    logging.info("Collected.")
+                    continue
                 
                 # abandon session on error
                 if not cssirlbot.processing.process_comment(mention, config, reddit):
