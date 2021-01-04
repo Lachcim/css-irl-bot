@@ -31,8 +31,8 @@
 		"INVALID_CSS_ERROR": "* Line {lastLine}, column {lastColumn}, **{type}**: `{message}`\n",
 		"INVALID_CSS_TAIL": "\nAll I know is linting rules, sorry if I missed the joke!",
 		
-		"FOOTNOTE": "",
-		"POSTCARD": ""
+		"FOOTNOTE": "\n\n*****\n\n^^I'm ^^a ^^bot ^^who ^^validates ^^your ^^titles. ^^[author](https://reddit.com/message/compose/?to=Lachcim) ^^[about](http://redd.it/bpvzqj/) ^^[summon](https://redd.it/e1p0sv/) ^^[source](https://github.com/Lachcim/css-irl-bot)",
+		"POSTCARD": " ^^Come ^^visit ^^us ^^at ^^/r/css_irl!"
 	},
 	"commands": {
 		"parse_this": ["this", "me", "myself"],
