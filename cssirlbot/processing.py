@@ -27,7 +27,7 @@ def process_submission(submission, config, reply_target=None):
         home_subreddit = config["behavior"]["subreddit"]
         foreign = reply_target is not None
         reply_target = reply_target or submission
-        author = submission.author.name
+        author = submission.author.name if submission.author else "[deleted]"
         external = reply_target.subreddit.display_name != home_subreddit
         
         if result == True and (comment_on_valid or foreign):
